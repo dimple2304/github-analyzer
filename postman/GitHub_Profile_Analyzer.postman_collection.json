@@ -8,7 +8,7 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:3000",
+      "value": "github-analyzer-production-fe86.up.railway.app",
       "type": "string"
     }
   ],

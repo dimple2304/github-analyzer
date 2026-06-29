@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: b14bf824-d990-449a-8187-b7a713d6678e
+
+localResources:
+  collections:
+    - ..\GitHub_Profile_Analyzer.postman_collection.json
