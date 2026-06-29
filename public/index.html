@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Profile Analyzer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+    header p {
+      margin-top: 8px;
+      color: #8b949e;
+      font-size: 0.95rem;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #e6edf3;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus { border-color: #58a6ff; }
+
+    button {
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    button:hover { background: #2ea043; }
+    button.secondary {
+      background: #21262d;
+      border: 1px solid #30363d;
+    }
+    button.secondary:hover { background: #30363d; }
+
+    #output {
+      margin-top: 20px;
+    }
+
+    .profile-card {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .profile-card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid #30363d;
+    }
+
+    .profile-info { flex: 1; min-width: 200px; }
+    .profile-info h3 { font-size: 1.2rem; color: #58a6ff; }
+    .profile-info p { color: #8b949e; font-size: 0.85rem; margin-top: 4px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .stat-box .value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+    .stat-box .label {
+      font-size: 0.75rem;
+      color: #8b949e;
+      margin-top: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 0.78rem;
+      color: #79c0ff;
+      margin: 3px 2px;
+    }
+
+    .profiles-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .mini-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .mini-card:hover { border-color: #58a6ff; }
+    .mini-card img { width: 42px; height: 42px; border-radius: 50%; }
+    .mini-card .info h4 { font-size: 0.95rem; color: #e6edf3; }
+    .mini-card .info p { font-size: 0.8rem; color: #8b949e; margin-top: 2px; }
+
+    .error { color: #f85149; font-size: 0.9rem; margin-top: 12px; }
+    .success-msg { color: #3fb950; font-size: 0.85rem; margin-top: 10px; }
+
+    .loader {
+      display: none;
+      color: #8b949e;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    .loader.active { display: block; }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab {
+      padding: 8px 18px;
+      border-radius: 6px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .tab.active { background: #58a6ff; color: #0d1117; border-color: #58a6ff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔍 GitHub Profile Analyzer</h1>
+    <p>Analyze any GitHub user and store their insights in your database</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('analyze')">Analyze Profile</div>
+      <div class="tab" onclick="showTab('all')">All Stored Profiles</div>
+      <div class="tab" onclick="showTab('fetch')">Fetch a Profile</div>
+    </div>
+
+    <!-- Analyze Tab -->
+    <div id="tab-analyze" class="card">
+      <h2>Analyze GitHub User</h2>
+      <div class="input-row">
+        <input type="text" id="analyzeInput" placeholder="Enter GitHub username (e.g. torvalds)" />
+        <button onclick="analyzeUser()">Analyze</button>
+      </div>
+      <div class="loader" id="analyzeLoader">⏳ Fetching from GitHub...</div>
+      <div id="output"></div>
+    </div>
+
+    <!-- All Profiles Tab -->
+    <div id="tab-all" class="card" style="display:none;">
+      <h2>All Stored Profiles</h2>
+      <button onclick="loadAllProfiles()">Load Profiles</button>
+      <div class="loader" id="allLoader">⏳ Loading...</div>
+      <div id="allOutput" style="margin-top:16px;"></div>
+    </div>
+
+    <!-- Fetch Single Tab -->
+    <div id="tab-fetch" class="card" style="display:none;">
+      <h2>Fetch Stored Profile</h2>
+      <div class="input-row">
+        <input type="text" id="fetchInput" placeholder="Enter stored username" />
+        <button onclick="fetchSingle()">Fetch</button>
+      </div>
+      <div class="loader" id="fetchLoader">⏳ Fetching...</div>
+      <div id="fetchOutput" style="margin-top:16px;"></div>
+    </div>
+
+  </div>
+
+  <script>
+    function showTab(name) {
+      document.querySelectorAll("[id^='tab-']").forEach(el => el.style.display = "none");
+      document.getElementById("tab-" + name).style.display = "block";
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      event.target.classList.add("active");
+    }
+
+    function renderProfile(data) {
+      const langs = data.top_languages
+        ? data.top_languages.split(",").map(l => `<span class="badge">${l.trim()}</span>`).join("")
+        : "<span style='color:#8b949e'>N/A</span>";
+
+      return `
+        <div class="profile-card" style="margin-bottom:16px;">
+          <img src="${data.avatar_url || ''}" alt="avatar" onerror="this.src='https://github.com/identicons/github.png'"/>
+          <div class="profile-info">
+            <h3><a href="${data.profile_url}" target="_blank" style="color:inherit;text-decoration:none;">${data.name || data.username}</a></h3>
+            <p>@${data.username}</p>
+            <p style="margin-top:6px;">${data.bio || "No bio provided."}</p>
+            <p style="margin-top:4px;">📍 ${data.location || "—"} &nbsp;|&nbsp; 🏢 ${data.company || "—"}</p>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="value">${data.public_repos}</div><div class="label">Public Repos</div></div>
+          <div class="stat-box"><div class="value">${data.followers}</div><div class="label">Followers</div></div>
+          <div class="stat-box"><div class="value">${data.following}</div><div class="label">Following</div></div>
+          <div class="stat-box"><div class="value">${data.total_stars}</div><div class="label">Total Stars</div></div>
+          <div class="stat-box"><div class="value">${data.total_forks}</div><div class="label">Total Forks</div></div>
+          <div class="stat-box"><div class="value">${data.account_age_days}</div><div class="label">Days on GitHub</div></div>
+          <div class="stat-box"><div class="value">${data.public_gists}</div><div class="label">Public Gists</div></div>
+          <div class="stat-box"><div class="value">${data.most_starred_count || 0} ⭐</div><div class="label">${data.most_starred_repo || "—"}</div></div>
+        </div>
+        <div style="margin-top:14px;">
+          <span style="color:#8b949e; font-size:0.82rem;">Top Languages:</span><br/>
+          <div style="margin-top:6px;">${langs}</div>
+        </div>
+        <p style="color:#8b949e; font-size:0.75rem; margin-top:14px;">Last analyzed: ${new Date(data.analyzed_at).toLocaleString()}</p>
+      `;
+    }
+
+    async function analyzeUser() {
+      const username = document.getElementById("analyzeInput").value.trim();
+      if (!username) return;
+      const loader = document.getElementById("analyzeLoader");
+      const output = document.getElementById("output");
+      loader.classList.add("active");
+      output.innerHTML = "";
+
+      try {
+        const res = await fetch(`/api/analyze/${username}`, { method: "POST" });
+        const json = await res.json();
+        if (!json.success) {
+          output.innerHTML = `<p class="error">❌ ${json.message}</p>`;
+        } else {
+          output.innerHTML = `<p class="success-msg"> ${json.message}</p>` + renderProfile(json.data);
+        }
+      } catch (e) {
+        output.innerHTML = `<p class="error">❌ Network error. Is the server running?</p>`;
+      } finally {
+        loader.classList.remove("active");
+      }
+    }
+
+    async function loadAllProfiles() {
+      const loader = document.getElementById("allLoader");
+      const output = document.getElementById("allOutput");
+      loader.classList.add("active");
+      output.innerHTML = "";
+
+      try {
+        const res = await fetch("/api/profiles");
+        const json = await res.json();
+        if (!json.success || json.data.length === 0) {
+          output.innerHTML = `<p style="color:#8b949e;">No profiles stored yet. Analyze some first!</p>`;
+        } else {
+          output.innerHTML = `<p style="color:#8b949e;margin-bottom:12px;">Showing ${json.data.length} of ${json.total} profiles</p>`;
+          output.innerHTML += `<div class="profiles-list">` + json.data.map(p => `
+            <div class="mini-card" onclick="document.getElementById('fetchInput').value='${p.username}'; showTab('fetch'); fetchSingle();">
+              <img src="${p.avatar_url || ''}" alt="avatar" />
+              <div class="info">
+                <h4>${p.name || p.username} <span style="color:#8b949e;font-weight:400;">@${p.username}</span></h4>
+                <p>⭐ ${p.total_stars} stars &nbsp;|&nbsp; 📦 ${p.public_repos} repos &nbsp;|&nbsp; 👥 ${p.followers} followers</p>
+              </div>
+            </div>
+          `).join("") + `</div>`;
+        }
+      } catch (e) {
+        output.innerHTML = `<p class="error">❌ Could not load profiles.</p>`;
+      } finally {
+        loader.classList.remove("active");
+      }
+    }
+
+    async function fetchSingle() {
+      const username = document.getElementById("fetchInput").value.trim();
+      if (!username) return;
+      const loader = document.getElementById("fetchLoader");
+      const output = document.getElementById("fetchOutput");
+      loader.classList.add("active");
+      output.innerHTML = "";
+
+      try {
+        const res = await fetch(`/api/profiles/${username}`);
+        const json = await res.json();
+        if (!json.success) {
+          output.innerHTML = `<p class="error">❌ ${json.message}</p>`;
+        } else {
+          output.innerHTML = renderProfile(json.data);
+        }
+      } catch (e) {
+        output.innerHTML = `<p class="error">❌ Could not fetch profile.</p>`;
+      } finally {
+        loader.classList.remove("active");
+      }
+    }
+
+    document.getElementById("analyzeInput").addEventListener("keydown", e => e.key === "Enter" && analyzeUser());
+    document.getElementById("fetchInput").addEventListener("keydown", e => e.key === "Enter" && fetchSingle());
+  </script>
+</body>
+</html>

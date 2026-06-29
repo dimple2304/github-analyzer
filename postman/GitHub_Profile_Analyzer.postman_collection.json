@@ -1,0 +1,112 @@
+{
+  "info": {
+    "name": "GitHub Profile Analyzer API",
+    "_postman_id": "github-analyzer-collection",
+    "description": "Collection for testing the GitHub Profile Analyzer backend API. Change the `base_url` variable to your deployed URL.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the server is up and running."
+      }
+    },
+    {
+      "name": "Analyze a GitHub Profile",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/analyze/torvalds",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze", "torvalds"]
+        },
+        "description": "Fetches the GitHub profile for 'torvalds', extracts insights, and stores them in MySQL. Replace 'torvalds' with any valid GitHub username."
+      }
+    },
+    {
+      "name": "Analyze Another Profile (dimple2304)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/analyze/dimple2304",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze", "dimple2304"]
+        },
+        "description": "Analyze Dimple's GitHub profile."
+      }
+    },
+    {
+      "name": "Get All Stored Profiles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/profiles?page=1&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["api", "profiles"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        },
+        "description": "Returns all analyzed profiles stored in the database with pagination support."
+      }
+    },
+    {
+      "name": "Get Single Profile by Username",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/profiles/torvalds",
+          "host": ["{{base_url}}"],
+          "path": ["api", "profiles", "torvalds"]
+        },
+        "description": "Fetch stored insights for a specific username. Returns 404 if not yet analyzed."
+      }
+    },
+    {
+      "name": "Delete a Stored Profile",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/profiles/torvalds",
+          "host": ["{{base_url}}"],
+          "path": ["api", "profiles", "torvalds"]
+        },
+        "description": "Deletes the stored profile for the given username from the database."
+      }
+    },
+    {
+      "name": "Analyze Non-existent User (404 test)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/analyze/thisisauser_that_doesnt_exist_xyz999",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze", "thisisauser_that_doesnt_exist_xyz999"]
+        },
+        "description": "Should return a 404 error from GitHub API."
+      }
+    }
+  ]
+}
